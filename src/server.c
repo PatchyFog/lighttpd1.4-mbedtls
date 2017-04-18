@@ -75,6 +75,15 @@
 #define TEXT_SSL
 #endif
 
+#if defined HAVE_MBEDTLS && defined HAVE_MBEDTLS_H
+#define USE_MBEDTLS
+#if defined USE_SSL
+#  undef  TEXT_SSL
+#  define TEXT_SSL " (ssl/mbedTLS)"
+#else
+#  define TEXT_SSL " (mbedTLS)"
+#endif
+
 #ifndef __sgi
 /* IRIX doesn't like the alarm based time() optimization */
 /* #define USE_ALARM */
@@ -628,9 +637,14 @@ static void show_features (void) {
       "\t- crypt support\n"
 #endif
 #ifdef USE_SSL
-      "\t+ SSL support\n"
+      "\t+ OpenSSL support\n"
 #else
-      "\t- SSL support\n"
+      "\t- OpenSSL support\n"
+#endif
+#ifdef USE_MBED_TLS
+      "\t+ mbedTLS support\n"
+#else
+      "\t- mbedTLS support\n"
 #endif
 #ifdef HAVE_LIBPCRE
       "\t+ PCRE support\n"
