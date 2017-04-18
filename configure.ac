@@ -499,6 +499,42 @@ if test "x$use_openssl" = "xyes"; then
     AC_SUBST(CRYPTO_LIB)
 fi
 
+dnl Check for mbedTLS
+AC_MSG_CHECKING(for mbedTLS)
+AC_ARG_WITH(mbedtls,
+    AC_HELP_STRING([--with-mbedtls@<:@=DIR@:>@],[Include mbedTLS support. DIR points to the installation root. (default no)]),
+    [WITH_MBEDTLS=$withval],[WITH_MBEDTLS=no])
+
+if test "$WITH_MBEDTLS" != "no"; then
+    use_mbedtls=yes
+	CPPFLAGS="$CPPFLAGS -I$WITH_MBEDTLS/include"
+	LDFLAGS="$LDFLAGS -L$WITH_MBEDTLS/lib"
+else
+    use_mbedtls=no
+fi
+AC_MSG_RESULT([$use_mbedtls])
+AM_CONDITIONAL(BUILD_WITH_MBEDTLS, test ! $WITH_MBEDTLS = no)
+
+if test "x$use_mbedtls" = "xyes"; then
+    AC_CHECK_HEADERS([mbedtls/config.h])
+    OLDLIBS="$LIBS"
+    AC_CHECK_LIB(mbedcrypto,mbedtls_base64_encode, [
+	  AC_CHECK_LIB(mbedtls, mbedtls_cipher_info_from_type, [
+	    AC_CHECK_LIB(mbedx509, mbedtls_x509_get_name, [
+		         MTLS_LIB="-lmbedcrypto -lmbedtls -lmbedx509"
+				 MTLS_CRYPTO_LIB="-lmbedcrypto"
+				 AC_DEFINE(HAVE_LIBMBEDTLS, [], [Have libmbedtls library])
+                 AC_DEFINE(HAVE_LIBMBEDCRYPTO, [], [Have libmbedcrypto library])
+                 AC_DEFINE(HAVE_LIBMBEDX509, [], [Have libmbedx509 library]) ],
+				 [],[-lmbedcrypto "$DL_LIB"])
+			 ],[],[-lmbedcrypto "$DL_LIB"])
+		 ],[],[])
+    LIBS="$OLDLIBS"
+    AC_SUBST(SSL_LIB)
+    AC_SUBST(CRYPTO_LIB)
+fi
+
+
 AC_MSG_CHECKING(for perl regular expressions support)
 AC_ARG_WITH(pcre, AC_HELP_STRING([--with-pcre],[Enable pcre support (default yes)]),
     [WITH_PCRE=$withval],[WITH_PCRE=yes])
@@ -1009,9 +1045,10 @@ AC_CONFIG_FILES([Makefile src/Makefile
 AC_OUTPUT
 
 
-do_build="mod_cgi mod_fastcgi mod_extforward mod_proxy mod_evhost mod_simple_vhost mod_access mod_alias mod_setenv mod_usertrack mod_auth mod_authn_file mod_status mod_accesslog"
-do_build="$do_build mod_rrdtool mod_secdownload mod_expire mod_compress mod_dirlisting mod_indexfile mod_userdir mod_webdav mod_staticfile mod_scgi mod_flv_streaming mod_ssi mod_deflate"
-do_build="$do_build mod_vhostdb"
+do_build="mod_access mod_accesslog mod_alias mod_auth mod_authn_file mod_cgi mod_compress mod_deflate mod_dirlisting"
+do_build="$do_build mod_evhost mod_expire mod_extforward mod_fastcgi mod_flv_streaming mod_indexfile mod_mbedtls mod_proxy"
+do_build="$do_build mod_rrdtool mod_scgi mod_secdownload mod_setenv mod_simple_vhost mod_ssi mod_staticfile mod_status mod_userdir"
+do_build="$do_build mod_usertrack mod_vhostdb mod_webdav"
 
 plugins="mod_rewrite mod_redirect"
 features="regex-conditionals"
@@ -1111,6 +1148,13 @@ fi
 
 features="network-openssl"
 if test ! "x$SSL_LIB" = x; then
+	enable_feature="$enable_feature $features"
+else
+	disable_feature="$disable_feature $features"
+fi
+
+features="network-mbedtls"
+if test ! "xMTLS_LIB" = x; then
 	enable_feature="$enable_feature $features"
 else
 	disable_feature="$disable_feature $features"
