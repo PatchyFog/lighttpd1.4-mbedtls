@@ -84,6 +84,7 @@
 #else
 #  define TEXT_SSL " (mbedTLS)"
 #endif
+#endif
 
 #ifndef __sgi
 /* IRIX doesn't like the alarm based time() optimization */

@@ -349,9 +349,8 @@ if BUILD_WITH_MBEDTLS
 lib_LTLIBRARIES += mod_mbedtls.la
 mod_mbedtls_la_SOURCES = mod_mbedtls.c
 mod_mbedtls_la_LDFLAGS = $(common_module_ldflags)
-mod_mbedtls_la_LIBADD = $(SSL_LIB) $(common_libadd)
+mod_mbedtls_la_LIBADD = $(MTLS_LIB) $(common_libadd)
 endif
-
 
 
 lib_LTLIBRARIES += mod_rewrite.la

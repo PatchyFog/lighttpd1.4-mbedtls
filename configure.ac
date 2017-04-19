@@ -530,7 +530,7 @@ if test "x$use_mbedtls" = "xyes"; then
 			 ],[],[-lmbedcrypto "$DL_LIB"])
 		 ],[],[])
     LIBS="$OLDLIBS"
-    AC_SUBST(SSL_LIB)
+    AC_SUBST(MTLS_LIB)
     AC_SUBST(CRYPTO_LIB)
 fi
 
