@@ -75,10 +75,11 @@
 #define TEXT_SSL
 #endif
 
-#if defined HAVE_MBEDTLS && defined HAVE_MBEDTLS_H
+
+#if defined HAVE_LIBMBEDTLS && defined HAVE_MBEDTLS_CONFIG_H
 #define USE_MBEDTLS
+#undef TEXT_SSL
 #if defined USE_SSL
-#  undef  TEXT_SSL
 #  define TEXT_SSL " (ssl/mbedTLS)"
 #else
 #  define TEXT_SSL " (mbedTLS)"
@@ -641,7 +642,7 @@ static void show_features (void) {
 #else
       "\t- OpenSSL support\n"
 #endif
-#ifdef USE_MBED_TLS
+#ifdef USE_MBEDTLS
       "\t+ mbedTLS support\n"
 #else
       "\t- mbedTLS support\n"
