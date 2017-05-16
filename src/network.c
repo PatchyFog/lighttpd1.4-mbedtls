@@ -390,7 +390,7 @@ static int network_server_init(server *srv, buffer *host_token, size_t sidx) {
 		goto error_free_socket;
 	}
 
-	if (s->ssl_enabled) {
+	if (s->ssl_enabled || s->mbedtls_enabled) {
 #ifdef TCP_DEFER_ACCEPT
 	} else if (s->defer_accept) {
 		int v = s->defer_accept;
@@ -418,7 +418,7 @@ static int network_server_init(server *srv, buffer *host_token, size_t sidx) {
 	}
 
 srv_sockets_append:
-	srv_socket->is_ssl = s->ssl_enabled;
+	srv_socket->is_ssl = (s->ssl_enabled || s->mbedtls_enabled);
 
 	if (srv->srv_sockets.size == 0) {
 		srv->srv_sockets.size = 4;

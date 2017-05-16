@@ -108,9 +108,10 @@ static int config_insert(server *srv) {
 		{ "connection.kbytes-per-second",      NULL, T_CONFIG_SHORT,   T_CONFIG_SCOPE_CONNECTION }, /* 26 */
 		{ "mimetype.use-xattr",                NULL, T_CONFIG_BOOLEAN, T_CONFIG_SCOPE_CONNECTION }, /* 27 */
 		{ "mimetype.assign",                   NULL, T_CONFIG_ARRAY,   T_CONFIG_SCOPE_CONNECTION }, /* 28 */
-		{ "unused-slot-moved-to-mod-openssl",  NULL, T_CONFIG_STRING,  T_CONFIG_SCOPE_CONNECTION }, /* 29 */
 
+		{ "mbedtls.engine",                    NULL, T_CONFIG_BOOLEAN, T_CONFIG_SCOPE_CONNECTION }, /* 29 */
 		{ "ssl.engine",                        NULL, T_CONFIG_BOOLEAN, T_CONFIG_SCOPE_CONNECTION }, /* 30 */
+
 		{ "debug.log-file-not-found",          NULL, T_CONFIG_BOOLEAN, T_CONFIG_SCOPE_CONNECTION }, /* 31 */
 		{ "debug.log-request-handling",        NULL, T_CONFIG_BOOLEAN, T_CONFIG_SCOPE_CONNECTION }, /* 32 */
 		{ "debug.log-response-header",         NULL, T_CONFIG_BOOLEAN, T_CONFIG_SCOPE_CONNECTION }, /* 33 */
@@ -237,6 +238,7 @@ static int config_insert(server *srv) {
 		s->max_request_size = 0;
 		s->use_xattr     = 0;
 		s->ssl_enabled   = 0;
+        s->mbedtls_enabled = 0;
 		s->use_ipv6      = (i == 0) ? 0 : srv->config_storage[0]->use_ipv6;
 		s->set_v6only    = (i == 0) ? 1 : srv->config_storage[0]->set_v6only;
 		s->defer_accept  = (i == 0) ? 0 : srv->config_storage[0]->defer_accept;
@@ -281,9 +283,10 @@ static int config_insert(server *srv) {
 		cv[26].destination = &(s->kbytes_per_second);
 		cv[27].destination = &(s->use_xattr);
 		cv[28].destination = s->mimetypes;
-		/*cv[29].destination = s->unused;*/
 
+		cv[29].destination = &(s->mbedtls_enabled);
 		cv[30].destination = &(s->ssl_enabled);
+
 		cv[31].destination = &(s->log_file_not_found);
 		cv[32].destination = &(s->log_request_handling);
 		cv[33].destination = &(s->log_response_header);
